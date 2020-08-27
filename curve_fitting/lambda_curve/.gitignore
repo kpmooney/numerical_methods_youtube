@@ -1,0 +1,10 @@
+*.png
+,gitignore
+diff_ev.py
+ga_fit.m
+histogram.fig
+histogram2.fig
+mega_dg.txt
+orig_code.py
+thumbnail.xcf
+visualize.m
