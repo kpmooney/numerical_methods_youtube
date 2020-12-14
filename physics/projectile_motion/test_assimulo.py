@@ -18,7 +18,7 @@ def no_drag(t, X):
     return(Xprime)
 
 #  Define out events function.  This is essentially the same as in Scipy
-def events(t, X, sw:
+def events(t, X, sw):
     res = np.zeros( X.shape )
     res[2] = X[2] -0
 
@@ -47,7 +47,7 @@ model = Explicit_Problem(no_drag, X0, t0)
 model.state_events = events
 model.handle_event = handle_event
 
-i#  Create simulation object
+#  Create simulation object
 sim = CVode(model)
 
 #  Run simulation
