@@ -1,0 +1,94 @@
+Sub Button1_Click()
+
+Dim S As Double, K As Double, r As Double, t As Double, price As Double
+Dim count As Integer, max_iter As Integer, epsilon As Double, tol As Double
+Dim sigma As Double, old_sigma As Double, fucntion_value As Double, vega As Double
+Dim option_type As String
+
+' Read in data from worksheet
+price = Range("B3").Value
+S = Range("B4").Value
+K = Range("B5").Value
+r = Range("B6").Value
+t = Range("B7").Value
+
+option_type = Range("B2")
+
+count = 0
+tol = 0.0001
+epsilon = 1
+max_iter = 10000
+sigma = 0.5
+
+Do While epsilon > tol
+
+    count = count + 1
+    
+    If count >= max_iter Then
+        Exit Do
+    End If
+    
+    old_sigma = sigma
+    
+    If option_type = "call" Then
+        function_value = call_price(sigma, S, K, r, t) - price
+    End If
+    If option_type = "put" Then
+        function_value = put_price(sigma, S, K, r, t) - price
+    End If
+    
+    '  Vega is the derivative of the price with respect to volatility
+    vega = calculate_vega(sigma, S, K, r, t)
+    
+    ' Update the estimate
+    sigma = -function_value / vega + sigma
+    
+    '  Calculate if error is within tolerance
+    epsilon = Abs((sigma - old_sigma) / old_sigma)
+    
+Loop
+
+'  Output the results to the spreadsheet
+Range("B9").Value = sigma
+Range("B10").Value = count
+
+End Sub
+
+
+
+Private Function calculate_vega(ByVal sigma As Double, ByVal S As Double, ByVal K As Double, ByVal r As Double, ByVal t As Double)
+
+Dim d1 As Double
+
+d1 = 1 / (sigma * Sqr(t)) * (WorksheetFunction.Ln(S / K) + (r + sigma * sigma / 2) * t)
+calculate_vega = S * Sqr(t) * WorksheetFunction.Norm_Dist(d1, 0, 1, False)
+
+
+End Function
+
+Private Function call_price(sigma, S, K, r, t)
+
+Dim d1 As Double, d2 As Double
+
+'  Calculate d1 and d2
+d1 = 1 / (sigma * Sqr(t)) * (WorksheetFunction.Ln(S / K) + (r + sigma * sigma / 2) * t)
+d2 = d1 - sigma * Sqr(t)
+
+call_price = WorksheetFunction.Norm_Dist(d1, 0, 1, True) * S - WorksheetFunction.Norm_Dist(d2, 0, 1, True) * K * Exp(-r * t)
+
+End Function
+
+Private Function put_price(sigma, S, K, r, t)
+
+Dim d1 As Double, d2 As Double
+
+'  Calculate d1 and d2
+d1 = 1 / (sigma * Sqr(t)) * (WorksheetFunction.Ln(S / K) + (r + sigma * sigma / 2) * t)
+d2 = d1 - sigma * Sqr(t)
+
+put_price = -WorksheetFunction.Norm_Dist(-d1, 0, 1, True) * S + WorksheetFunction.Norm_Dist(-d2, 0, 1, True) * K * Exp(-r * t)
+
+End Function
+
+
+
