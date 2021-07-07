@@ -14,7 +14,7 @@ sigma = 0.269 / np.sqrt(252.0)  #  Volatility
 #  form we are using is each row of the matrix is one simulation, each
 #  column is a day.
 epsilon = np.random.normal( size = (samples, days) )
-ds_s = r * dt + sigma * np.sqrt(dt) * epsilon
+ds_s = r * dt + sigma * epsilon
 
 #  Initialize a matrix to hold out final price data.  We add an additional
 #  column for the initial price.
